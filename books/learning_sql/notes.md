@@ -9,5 +9,9 @@
 
 ```sql
 mysql -u <username> -p              -- login to mysql
+mysql -u <username> -p <database>   -- login to mysql and use a specific database
 
+-- General SQL statements
+mysql> show databases;                     -- show all databases
+mysql> use <database>;                     -- use a specific database
 ```
