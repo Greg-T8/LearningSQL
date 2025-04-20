@@ -127,3 +127,4 @@ The following table shows the date format components.
 | `HHH`     | Hours (elapsed)         | -838 to 838                   |
 | `MI`      | Minutes                 | 00 to 59                      |
 | `SS`      | Seconds                 | 00 to 59                      |
+
