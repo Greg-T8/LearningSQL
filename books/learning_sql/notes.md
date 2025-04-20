@@ -2,19 +2,24 @@
 
 <img src='images/1744531821624.png' width='254'/>
 
-## Book Resources
+<details>
+<summary>Book Resources</summary>
+
 - [Example MySQL Databases](https://dev.mysql.com/doc/index-other.html)
+
+</details>
 
 ## Helpful Commands
 
 ```bash
+# Shell commands
 mysql -u <username> -p              -- login to mysql
 mysql -u <username> -p <database>   -- login to mysql and use a specific database
 ```
 
 
 ```sql
--- General SQL statements
+-- General MySQL statements
 mysql> show databases;                     -- show all databases
 mysql> use <database>;                     -- use a specific database
 ```
@@ -49,27 +54,27 @@ varchar(20)             -- Variable-length string of up to 20 characters
 
 #### Text Data
 
-There are four types of text data:
-- `tinytext` - 255 bytes
-- `text` - 65,535 bytes
-- `mediumtext` - 16,777,215 bytes
-- `longtext` - 4,294,967,295 bytes
+MySQL offers four text data types for storing larger strings:
 
-Things to remember:
-- If data being loaded is larger than the maximum size of the column, it will be truncated.
-- Trailing spaces are not removed
-- When using `text` columns for sorting or grouping, only the first 1,024 bytes are used
-- The different text types above are unique to MySQL. SQL Server has a single text type for large character data
-- MySQL allows up to 65,535 bytes for `varchar` columns (it was limited to 255 bytes in earlier versions), so there isn't any particular need to use the `tinytext` or `text` types.
+| Type         | Maximum Size        | Best Use Case               |
+| ------------ | ------------------- | --------------------------- |
+| `tinytext`   | 255 bytes           | Short text                  |
+| `text`       | 65,535 bytes        | Medium-length documents     |
+| `mediumtext` | 16,777,215 bytes    | Larger documents            |
+| `longtext`   | 4,294,967,295 bytes | Very large documents, files |
 
-If you are creating a column for free-form entry, such as a `notes` column to hold about customer interactions, then `varchar` is probably adequate. If you are storing documents, then use the `mediumtext` or `longtext` type.
+Important notes:
+- Data exceeding column size will be truncated
+- Trailing spaces are preserved
+- For sorting/grouping, only the first 1,024 bytes are used
+- `varchar` (up to 65,535 bytes) often eliminates the need for `tinytext`/`text` 
+- Choose `varchar` for short free-form entries (e.g., notes fields) and `mediumtext`/`longtext` for document storage.
 
 #### Numeric Data
 
-There are five different numeric types, each with a signed range and an unsigned range.
+MySQL provides several numeric data types for different storage needs.
 
-**Integer Types**
-Here is a table showing the MySQL integer types:
+##### Integer Types
 
 | Type        | Signed Range                    | Unsigned Range     |
 | ----------- | ------------------------------- | ------------------ |
@@ -79,26 +84,30 @@ Here is a table showing the MySQL integer types:
 | `int`       | -2,147,483,648 to 2,147,483,647 | 0 to 4,294,967,295 |
 | `bigint`    | -2^63 to 2^63 - 1               | 0 to 2^64 - 1      |
 
-**Floating Types**
-Floating point types include the `double` and `float`. Tehse types are specified as `float(p ,s)` and `double(p, s)`, where `p` is the precision and `s` is the scale. The precision is the total number of digits that can be stored, and the scale is the number of digits to the right of the decimal point.
+#####	 Floating-Point Types
+
+For decimal values, MySQL offers `float` and `double` types with syntax `float(p, s)` or `double(p, s)`:
+- `p` = precision (total digits)
+- `s` = scale (digits after decimal point)
 
 Examples:
 ```sql
-float(7, 4)            -- 7 digits total, 4 digits to the right of the decimal, i.e. 123.4567
-double(16, 8)          -- 16 digits total, 8 digits to the right of the decimal, i.e. 12345678.12345678
+float(7, 4)     -- Stores values like 123.4567
+double(16, 8)   -- Stores values like 12345678.12345678
 ```
 
-Existing numbers that that have more precision will be rounded while attempting to store a number with greater precision will result in an error.
+Note: Values exceeding specified precision will be rounded; attempting to store values with too many digits before the decimal point causes an error.
 
-**Temporal Data**
+##### Temporal Types
+
 The following table shows the MySQL temporal types, including the default format and the allowable values:
 
 | Type        | Format              | Allowable Values                                   |
 | ----------- | ------------------- | -------------------------------------------------- |
 | `date`      | YYYY-MM-DD          | 1000-01-01 to 9999-12-31                           |
-| `datetime`  | YYYY-MM-DD HH:MM:SS | 1000-01-01 00:00:00 to 9999-12-31 23:59:59         |
-| `timestamp` | YYYY-MM-DD HH:MM:SS | 1970-01-01 00:00:01 UTC to 2038-01-19 03:14:07 UTC |
-| `time`      | HH:MM:SS            | -838:59:59 to 838:59:59                            |
+| `datetime`  | YYYY-MM-DD HH:MI:SS | 1000-01-01 00:00:00 to 9999-12-31 23:59:59         |
+| `timestamp` | YYYY-MM-DD HH:MI:SS | 1970-01-01 00:00:01 UTC to 2038-01-19 03:14:07 UTC |
+| `time`      | HHH:MMI:SS          | -838:59:59 to 838:59:59                            |
 | `year`      | YYYY                | 1901 to 2155                                       |
 
 Practical examples:  
@@ -106,3 +115,15 @@ Practical examples:
 - A column that holds information about actual shipping would use the `datetime` type
 - A column that tracks when a user last modified a record would use the `timestamp` type
 - Columns that hold data regarding the length of time to complete a task would use the `time` type
+
+The following table shows the date format components.
+
+| Component | Definition              | Range                         |
+| --------- | ----------------------- | ----------------------------- |
+| `YYYY`    | Year, including centruy | 1000 to 9999                  |
+| `MM`      | Month                   | 01 (January) to 12 (December) |
+| `DD`      | Day of the month        | 01 to 31                      |
+| `HH`      | Hour of the day         | 00 to 23                      |
+| `HHH`     | Hours (elapsed)         | -838 to 838                   |
+| `MI`      | Minutes                 | 00 to 59                      |
+| `SS`      | Seconds                 | 00 to 59                      |
