@@ -128,3 +128,8 @@ The following table shows the date format components.
 | `MI`      | Minutes                 | 00 to 59                      |
 | `SS`      | Seconds                 | 00 to 59                      |
 
+
+
+The following example illustrates the design of a table using basic normalization:
+
+![Person table](./ch02/ch02-database-design-for-person-table.svg)
