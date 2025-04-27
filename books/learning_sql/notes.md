@@ -15,6 +15,7 @@
 # Shell commands
 mysql -u <username> -p              -- login to mysql
 mysql -u <username> -p <database>   -- login to mysql and use a specific database
+mysql -u <username> -p <database> < script.sql  -- run a script
 ```
 
 
@@ -128,8 +129,84 @@ The following table shows the date format components.
 | `MI`      | Minutes                 | 00 to 59                      |
 | `SS`      | Seconds                 | 00 to 59                      |
 
-
+#### Table Creation
 
 The following example illustrates the design of a table using basic normalization:
 
 ![Person table](./ch02/ch02-database-design-for-person-table.svg)
+
+The following script creates the `person` table:
+
+```sql
+CREATE TABLE person (
+    person_id SMALLINT UNSIGNED,
+    fname VARCHAR(20),
+    lname VARCHAR(20),
+    eye_color ENUM('BR','BL','GR'),
+    birth_date DATE,
+    street VARCHAR(30),
+    city VARCHAR(20),
+    state VARCHAR(20),
+    country VARCHAR(20),
+    postal_code VARCHAR(20),
+    CONSTRAINT pk_person PRIMARY KEY (person_id)
+);
+```
+See file [create_person_table.sql](./ch02/create_person_table.sql).
+
+To run this script, issue the following command:
+
+```bash
+mysql -u <username> -p <database> < create_person_table.sql
+```
+<img src="images/1745783028752.png" width="450"/>
+
+To confirm the table was created, issue the `describe` command:
+
+```sql
+desc person;
+```
+<img src="images/1745783213856.png" width="500"/>
+
+Things to note:
+- Column 3 `Null` indicates whether a column can be omitted when inserting data.
+- Column 5 `Default` indicates whether a column can be populated with a default value.
+- Column 6 `Extra` shows any other pertinent information about the column.
+
+Since a person can have multiple favorite foods, we create a separate table, `favorite_food`, to store this information.
+
+```sql
+CREATE TABLE
+    favorite_food (
+        person_id SMALLINT UNSIGNED,
+        food VARCHAR(20),
+        CONSTRAINT pk_favorite_food PRIMARY KEY (person_id, food),
+        CONSTRAINT fk_fav_food_person_id FOREIGN KEY (person_id) REFERENCES person (person_id)
+    )
+```
+See file [create_favorite_food.sql](./ch02/create_favorite_food.sql).
+
+To run this script, issue the following command:
+
+```bash
+mysql -u <username> -p <database> < create_favorite_food.sql
+```
+<img src="images/1745784158974.png" width="500"/>
+
+Things to note:
+- The `PRIMARY KEY` constraint ensures that the combination of `person_id` and `food` is unique.
+- The `FOREIGN KEY` constraint constrains the `person_id` column to only accept values that exist in the `person` table.
+
+#### Populating and Modifying the Tables
+
+With the tables created, you can now explore the four SQL data statments: `insert`, `update`, `delete`, and `select`.
+
+##### Inserting Data
+
+There are three main components to the `insert` statement:
+- The name of the table into which you want to insert data
+- The names of the columns in the table to be populated
+- The values to be inserted into the columns
+
+Unless all the columns have been defined with the `NOT NULL` constraint, you are not required to provide date for every column in the table. This means you can leave off columns that are not required.
+
