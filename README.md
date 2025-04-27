@@ -6,4 +6,4 @@ This is my learning space for the SQL.
 ![GitHub last commit](https://img.shields.io/github/last-commit/Greg-T8/LearningSQL)
 
 ## Book Notes
-- [Learning SQL](./books/learning_sql/notes.md)
+- [Learning SQL](./books/learning_sql/notes.md) by Alan Beaulieu
