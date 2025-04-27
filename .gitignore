@@ -20,7 +20,7 @@ Thumbs.db
 *.so
 
 # Ignore database dumps
-*.sql
+# *.sql
 
 # Ignore IDE-specific files
 .idea/
