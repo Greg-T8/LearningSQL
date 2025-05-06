@@ -208,5 +208,23 @@ There are three main components to the `insert` statement:
 - The names of the columns in the table to be populated
 - The values to be inserted into the columns
 
-Unless all the columns have been defined with the `NOT NULL` constraint, you are not required to provide date for every column in the table. This means you can leave off columns that are not required.
+Unless all the columns have been defined with the `NOT NULL` constraint, you are not required to provide data for every column in the table. This means you can leave off columns that are not required.
 
+##### Generating numeric key data
+
+How are values generated for numeric primary keys? A couple of options:
+- Look at largest value in the table and add 1
+- Let the database engine generate the value for you
+
+The first option is not a good idea because it proves problematic in a multi-user environment, since two users could be trying to insert data at the same time. The second option is a better choice, and MySQL provides the `AUTO_INCREMENT` attribute to do this:
+
+`ALTER TABLE person MODIFY person_id SMALLINT UNSIGNED AUTO_INCREMENT;`
+
+**Output:**  
+<img src="images/1746517640544.png" width="850"/>
+
+	The output gives an error because you first need to disable the foreign key constraint on the `favorite_food` table. The following progession of statements will do this:
+
+	```sql
+	set foreign_key_checks = 0;
+	ALTER TABLE person
