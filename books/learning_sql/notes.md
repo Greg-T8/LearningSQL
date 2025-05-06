@@ -210,7 +210,7 @@ There are three main components to the `insert` statement:
 
 Unless all the columns have been defined with the `NOT NULL` constraint, you are not required to provide data for every column in the table. This means you can leave off columns that are not required.
 
-##### Generating numeric key data
+###### Generating numeric key data
 
 How are values generated for numeric primary keys? A couple of options:
 - Look at largest value in the table and add 1
@@ -242,7 +242,7 @@ Running the `desc` command on the `person` table shows that the `AUTO_INCREMENT`
 
 When inserting data into the `person` table, you provide a `null` value for the `person_id` column. The database engine will automatically generate the next available number for you.
 
-#### The `insert` statement
+###### The `insert` statement
 
 The following statement creates a row in the `person` table:
 
@@ -315,7 +315,7 @@ Querying the `person` table shows that Susan's `person_id` is `2`:
 <img src="images/1746519643042.png" width="450"/>
 
 
-##### Outputting in XML
+###### Outputting in XML
 
 With MySQL, you can use the `--xml` option to output the results of a query in XML format. This is useful for exporting data to other applications or for web services.
 
@@ -326,4 +326,60 @@ mysql -u gtate -p --xml sakila
 Example output:  
 <img src="images/1746519830941.png" width="750"/>
 
+
+##### Updating Data
+
+Use the following command to populate columns in the `person` table that were not populated when the row was created:
+
+```sql
+UPDATE person
+SET street = '1225 Tremont St.',
+  city = 'Boston',
+  state = 'MA',
+  country = 'USA',
+  postal_code = '02138'
+WHERE person_id = 1;
+```
+**Output:**  
+<img src="images/1746520147324.png" width="350"/>
+
+##### Deleting Data
+
+Use the following command to delete a row from the `person` table:
+
+```sql
+DELETE FROM person
+WHERE person_id = 2;
+```
+**Output:**  
+<img src="images/1746520340568.png" width="300"/>
+
+**Note:** The primary key is used to identify the row to be deleted. If you do not specify a `WHERE` clause, all rows in the table will be deleted.
+
+#### When Good Statements Go Bad
+
+##### Non-unique Primary Key
+
+The next statement attempts to bypass the `AUTO_INCREMENT` attribute by inserting a value into the `person_id` column:
+
+```sql
+INSERT INTO person
+  (person_id, fname, lname, eye_color, birth_date)
+VALUES (1, 'Charles', 'Fulton', 'GR', '1968-01-15');
+```
+**Output:**  
+<img src="images/1746520552579.png" width="450"/>
+
+##### Nonexistent Foreign Key
+
+The foreign key constraint on the `favorite_food` table ensures that all values of `person_id` in the `favorite_food` table exist in the `person` table. The following statement attempts to insert a row into the `favorite_food` table with a `person_id` that does not exist in the `person` table:
+
+```sql
+INSERT INTO favorite_food (person_id, food)
+VALUES (999, 'lasagna');
+```
+**Output:**  
+<img src="images/1746520734368.png" width="650"/>
+
+**Note:** The `favorite_food` table is considered the child table, and the `person` table is the parent table.
 
