@@ -13,9 +13,10 @@
 
 ```bash
 # Shell commands
-mysql -u <username> -p              -- login to mysql
-mysql -u <username> -p <database>   -- login to mysql and use a specific database
-mysql -u <username> -p <database> < script.sql  -- run a script
+mysql -u <username> -p                          # login to mysql
+mysql -u <username> -p <database>               # login to mysql and use a specific database
+mysql -u <username> -p <database> < script.sql  # run a script
+mysql -u <username> -p <database> --xml         # show results in XML format
 ```
 
 
@@ -23,7 +24,22 @@ mysql -u <username> -p <database> < script.sql  -- run a script
 -- General MySQL statements
 mysql> show databases;                     -- show all databases
 mysql> use <database>;                     -- use a specific database
+mysql> show tables;                        -- show all tables in the current database
+mysql> desc <table>;                       -- show the structure of a table
+mysql> select * from <table>;              -- select all rows from a table
 ```
+
+## Contents
+- [Helpful Commands](#helpful-commands)
+- [Contents](#contents)
+- [Chapter 2: Creating and Populating a Database](#chapter-2-creating-and-populating-a-database)
+  - [MySQL Data Types](#mysql-data-types)
+    - [Character Data](#character-data)
+    - [Text Data](#text-data)
+    - [Numeric Data](#numeric-data)
+    - [Table Creation](#table-creation)
+    - [Populating and Modifying the Tables](#populating-and-modifying-the-tables)
+    - [When Good Statements Go Bad](#when-good-statements-go-bad)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -152,7 +168,7 @@ CREATE TABLE person (
     CONSTRAINT pk_person PRIMARY KEY (person_id)
 );
 ```
-See file [create_person_table.sql](./ch02/create_person_table.sql).
+[create_person_table.sql](./ch02/create_person_table.sql).
 
 To run this script, issue the following command:
 
@@ -184,7 +200,7 @@ CREATE TABLE
         CONSTRAINT fk_fav_food_person_id FOREIGN KEY (person_id) REFERENCES person (person_id)
     )
 ```
-See file [create_favorite_food.sql](./ch02/create_favorite_food.sql).
+[create_favorite_food.sql](./ch02/create_favorite_food.sql).
 
 To run this script, issue the following command:
 
