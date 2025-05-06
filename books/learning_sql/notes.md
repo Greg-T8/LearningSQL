@@ -383,3 +383,58 @@ VALUES (999, 'lasagna');
 
 **Note:** The `favorite_food` table is considered the child table, and the `person` table is the parent table.
 
+##### Column Value Violations
+
+The `eye_color` column in the `person` table is defined as an `ENUM` type, which means it can only accept a limited set of values. The following statement attempts to insert a value that is not in the list of allowed values:
+
+```sql
+UPDATE person
+SET eye_color = 'ZZ'
+WHERE person_id = 1;
+```
+<img src="images/1746520948905.png" width="500"/>
+
+##### Invalid Date Conversions
+
+If you construct a date string that is not in the correct format, MySQL will not be able to convert it to a date value. The following statement attempts to insert an invalid date string into the `birth_date` column:
+
+```sql
+UPDATE person
+SET birth_date = 'DEC-21-1980'
+WHERE person_id = 1;
+```
+<img src="images/1746521055345.png" width="600"/>
+
+In general, it's always a good idea to explicitly specify the format string rather than relying on MySQL to guess the format. The following statement uses the `str_to_date` function to specify the format of the date string:
+
+```sql
+UPDATE person
+SET birth_date = str_to_date('DEC-21-1980', '%b-%d-%Y')   -- %Y = 4-digit year, %b = abbreviated month name
+WHERE person_id = 1;
+```
+**Output:**  
+<img src="images/1746521290350.png" width="500"/>
+
+###### Formatting Strings
+
+The following table shows the format strings that can be used with the `str_to_date` function:
+
+
+| Format | Description                                        |
+| ------ | -------------------------------------------------- |
+| %a     | The short weekday name, such as Sun, Mon, ...      |
+| %b     | The short month name, such as Jan, Feb, ...        |
+| %c     | The numeric month (0..12)                          |
+| %d     | The numeric day of the month (00..31)              |
+| %f     | The number of microseconds (000000..999999)        |
+| %H     | The hour of the day, in 24-hour format (00..23)    |
+| %h     | The hour of the day, in 12-hour format (01..12)    |
+| %i     | The minutes within the hour (00..59)               |
+| %j     | The day of year (001..366)                         |
+| %M     | The full month name (January..December)            |
+| %m     | The numeric month                                  |
+| %p     | AM or PM                                           |
+| %s     | The number of seconds (00..59)                     |
+| %W     | The full weekday name (Sunday..Saturday)           |
+| %w     | The numeric day of the week (0=Sunday..6=Saturday) |
+| %Y     | The four-digit year                                |
