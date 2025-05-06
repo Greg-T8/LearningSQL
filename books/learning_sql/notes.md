@@ -271,3 +271,59 @@ WHERE person_id=1;
 ```
 **Output:**  
 <img src="images/1746518948022.png" width="400"/>
+
+**Note:**  
+- Values were not provided for the `street`, `city`, `state`, `country`, and `postal_code` columns, so they are set to `null`.
+- The value provided for `birth_date` is a string, which is converted to a date value by MySQL (as long as the string is in the correct format).
+- The column names and values must correspond in number and type.
+
+The following statements show inserting William's favorite foods into the `favorite_food` table:
+
+```sql
+INSERT INTO favorite_food (person_id, food)
+VALUES (1, 'pizza');
+K, 1 row affected (0.05 sec)
+
+INSERT INTO favorite_food (person_id, food)
+VALUES (1, 'cookies');
+K, 1 row affected (0.02 sec)
+
+INSERT INTO favorite_food (person_id, food)
+VALUES (1, 'nachos');
+```
+**Output:**  
+<img src="images/1746519246778.png" width="400"/>
+
+The following query retrieves William's favorite foods in alphabetical order:
+
+```sql
+SELECT food 
+FROM favorite_food 
+WHERE person_id = 1
+ORDER BY food;
+```
+**Output:**  
+<img src="images/1746519360413.png" width="500"/>
+
+Adding Susan to the `person` table, including her address columns:
+
+```sql
+INSERT INTO person (person_id, fname, lname, eye_color, birth_date, street, city, state, country, postal_code) 
+VALUES (null, 'Susan', 'Smith', 'BL', '1975-11-02', '23 Maple St.', 'Arlington', 'VA', 'USA', '20220');
+```
+Querying the `person` table shows that Susan's `person_id` is `2`:  
+<img src="images/1746519643042.png" width="450"/>
+
+
+##### Outputting in XML
+
+With MySQL, you can use the `--xml` option to output the results of a query in XML format. This is useful for exporting data to other applications or for web services.
+
+```bash
+mysql -u gtate -p --xml sakila
+```
+
+Example output:  
+<img src="images/1746519830941.png" width="750"/>
+
+
