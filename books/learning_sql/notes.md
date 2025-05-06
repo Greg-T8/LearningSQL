@@ -454,3 +454,7 @@ The following table shows the format strings that can be used with the `str_to_d
 | %W     | The full weekday name (Sunday..Saturday)           |
 | %w     | The numeric day of the week (0=Sunday..6=Saturday) |
 | %Y     | The four-digit year                                |
+
+
+
+On pickup, generate diagram of the database schema (see appendix)
