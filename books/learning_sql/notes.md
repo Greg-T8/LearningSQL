@@ -223,8 +223,51 @@ The first option is not a good idea because it proves problematic in a multi-use
 **Output:**  
 <img src="images/1746517640544.png" width="850"/>
 
-	The output gives an error because you first need to disable the foreign key constraint on the `favorite_food` table. The following progession of statements will do this:
+The output gives an error because you first need to disable the foreign key constraint on the `favorite_food` table. The following progession of statements will do this:
 
-	```sql
-	set foreign_key_checks = 0;
-	ALTER TABLE person
+```sql
+set foreign_key_checks = 0;
+ALTER TABLE person
+    MODIFY person_id SMALLINT UNSIGNED AUTO_INCREMENT;
+set foreign_key_checks = 1;
+```
+[alter_table_auto_increment.sql](./ch02/alter_table_auto_increment.sql)  
+
+**Output:**  
+<img src="images/1746518280052.png" width="650"/>
+
+Running the `desc` command on the `person` table shows that the `AUTO_INCREMENT` attribute has been added to the `person_id` column.
+
+<img src="images/1746518369147.png" width="650"/>
+
+When inserting data into the `person` table, you provide a `null` value for the `person_id` column. The database engine will automatically generate the next available number for you.
+
+#### The `insert` statement
+
+The following statement creates a row in the `person` table:
+
+```sql
+INSERT INTO person
+  (person_id, fname, lname, eye_color, birth_date) 
+VALUES (null, 'William', 'Turner', 'BR', '1972-05-27');
+```
+
+To confirm data was inserted, issue the following command:
+
+```sql
+SELECT person_id, fname, lname, birth_date FROM person;
+```
+**Output:**  
+<img src="images/1746518774833.png" width="400"/>
+
+**Note:** MySQL automatically generates the `person_id` value, in this case `1`.
+
+If there were more rows in the table, you can add a `WHERE` clause to the `SELECT` statement to limit the output:
+
+```sql
+SELECT person_id, fname, lname, birth_date
+FROM person
+WHERE person_id=1;
+```
+**Output:**  
+<img src="images/1746518948022.png" width="400"/>
