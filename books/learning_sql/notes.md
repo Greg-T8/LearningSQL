@@ -6,19 +6,23 @@
 <summary>Book Resources</summary>
 
 - [Example MySQL Databases](https://dev.mysql.com/doc/index-other.html)
+- <details>
+  <summary>Sakila Database Schema</summary>
+  <img src='images/1747296772851.png' width='750'/>
+  </details>
 
 </details>
 
+<!-- omit in toc -->
 ## Helpful Commands
 
 ```bash
 # Shell commands
-mysql -u <username> -p                          # login to mysql
+mysql -u <username> -p                          # login to mysql; the -p option prompts for a password
 mysql -u <username> -p <database>               # login to mysql and use a specific database
 mysql -u <username> -p <database> < script.sql  # run a script
 mysql -u <username> -p <database> --xml         # show results in XML format
 ```
-
 
 ```sql
 -- General MySQL statements
@@ -29,17 +33,27 @@ mysql> desc <table>;                       -- show the structure of a table
 mysql> select * from <table>;              -- select all rows from a table
 ```
 
+<!-- omit in toc -->
 ## Contents
-- [Helpful Commands](#helpful-commands)
-- [Contents](#contents)
 - [Chapter 2: Creating and Populating a Database](#chapter-2-creating-and-populating-a-database)
   - [MySQL Data Types](#mysql-data-types)
     - [Character Data](#character-data)
     - [Text Data](#text-data)
     - [Numeric Data](#numeric-data)
+      - [Integer Types](#integer-types)
+      - [Floating-Point Types](#floating-point-types)
+      - [Temporal Types](#temporal-types)
     - [Table Creation](#table-creation)
     - [Populating and Modifying the Tables](#populating-and-modifying-the-tables)
+      - [Inserting Data](#inserting-data)
+      - [Updating Data](#updating-data)
+      - [Deleting Data](#deleting-data)
     - [When Good Statements Go Bad](#when-good-statements-go-bad)
+      - [Non-unique Primary Key](#non-unique-primary-key)
+      - [Nonexistent Foreign Key](#nonexistent-foreign-key)
+      - [Column Value Violations](#column-value-violations)
+      - [Invalid Date Conversions](#invalid-date-conversions)
+    - [The Sakila Database](#the-sakila-database)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -456,5 +470,34 @@ The following table shows the format strings that can be used with the `str_to_d
 | %Y     | The four-digit year                                |
 
 
+#### The Sakila Database
 
-On pickup, generate diagram of the database schema (see appendix)
+Produced by MySQL. Models a chain of DVD rental stores.
+
+<img src='images/1747296772851.png' width='750'/>
+
+Some of the tables used:
+
+| Table name | Definition                                       |
+| ---------- | ------------------------------------------------ |
+| film       | A movie that has been released and can be rented |
+| actor      | A person who acts in films                       |
+| customer   | A person who watches films                       |
+| category   | A genre of films                                 |
+| payment    | A rental of a film by a customer                 |
+| language   | A language spoken by the actors of a film        |
+| film_actor | An actor in a film                               |
+| inventory  | A film available for rental                      |
+
+Use `show tables` to see all tables in the Sakila database:
+
+<img src='images/1747297816688.png' width='200'/>
+
+The tables `person` and `favorite_food` are not part of the Sakila database, but were created in this chapter to illustrate how to create and populate tables. 
+
+Use the following command to drop these tables:
+
+```sql
+DROP TABLE favorite_food;
+DROP TABLE person;
+```
