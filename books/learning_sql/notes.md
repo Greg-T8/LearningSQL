@@ -31,6 +31,7 @@ mysql> use <database>;                     -- use a specific database
 mysql> show tables;                        -- show all tables in the current database
 mysql> desc <table>;                       -- show the structure of a table
 mysql> select * from <table>;              -- select all rows from a table
+mysql> pager less -S;                      -- use the pager to view long output
 ```
 
 <!-- omit in toc -->
@@ -58,6 +59,8 @@ mysql> select * from <table>;              -- select all rows from a table
   - [Query Mechanics](#query-mechanics)
   - [Query Clauses](#query-clauses)
   - [The `select` Clause](#the-select-clause)
+    - [Column Aliases](#column-aliases)
+    - [Removing Duplicates](#removing-duplicates)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -578,3 +581,56 @@ mysql> SELECT language_id,
     -> FROM language;
 ```
 <img src='images/1747299599635.png' width='450'/>
+
+Here is an example of using built-in functions without a `from` clause:
+
+```sql
+mysql> SELECT version(),
+    ->   user(),
+    ->   database();
+```
+<img src='images/1747299916779.png' width='450'/>
+
+#### Column Aliases
+
+You can use column aliases to rename columns in the result set. This is useful for making the output more readable or for avoiding conflicts with reserved words.
+
+```sql
+mysql> SELECT language_id,
+    ->   'COMMON' language_usage,                   -- Column alias: 'language_usage'
+    ->   language_id * 3.1415927 lang_pi_value,     -- Column alias: 'lang_pi_value'
+    ->   upper(name) language_name                  -- Column alias: 'language_name'
+    -> FROM language;
+```
+
+You can also use the `as` keyword to make your intent clearer, although it is optional:
+
+```sql
+mysql> SELECT language_id,
+    ->   'COMMON' AS language_usage,                   -- Column alias: 'language_usage'
+    ->   language_id * 3.1415927 AS lang_pi_value,     -- Column alias: 'lang_pi_value'
+    ->   upper(name) AS language_name                  -- Column alias: 'language_name'
+    -> FROM language;
+```
+#### Removing Duplicates
+
+A query might return duplicate rows of data:
+
+```sql
+SELECT actor_id FROM film_actor ORDER BY actor_id;
+```
+<img src='images/1747300639268.png' width='120'/>
+
+Specify the `all` keyword to include all rows, including duplicates. This is the default, so you don't need to specify it:
+
+```sql
+SELECT ALL actor_id FROM film_actor ORDER BY actor_id;
+```
+Use the `distinct` keyword directly after `select` to remove duplicate rows:
+
+```sql
+SELECT DISTINCT actor_id FROM film_actor ORDER BY actor_id;
+```
+<img src='images/1747300777121.png' width='120'/>
+
+**Note:** Generating a distinct set of results requires the data to be sorted, which can be a time-consuming process for large data sets. Don't fall into the trap of using `distinct` just to be sure there are no duplicates. Instead, take time to understand the data you are working with so that you'll know whether duplicates are possible.
