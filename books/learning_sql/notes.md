@@ -501,3 +501,11 @@ Use the following command to drop these tables:
 DROP TABLE favorite_food;
 DROP TABLE person;
 ```
+
+Use `describe` to look at the columns in a table:
+
+```sql
+desc customer;
+```
+<img src='images/1747298115512.png' width='650'/>
+
