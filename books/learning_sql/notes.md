@@ -32,6 +32,7 @@ mysql> show tables;                        -- show all tables in the current dat
 mysql> desc <table>;                       -- show the structure of a table
 mysql> select * from <table>;              -- select all rows from a table
 mysql> pager less -S;                      -- use the pager to view long output
+mysql> nopager;                            -- turn off the pager
 ```
 
 <!-- omit in toc -->
@@ -61,6 +62,10 @@ mysql> pager less -S;                      -- use the pager to view long output
   - [The `select` Clause](#the-select-clause)
     - [Column Aliases](#column-aliases)
     - [Removing Duplicates](#removing-duplicates)
+  - [The `from` Clause](#the-from-clause)
+    - [Tables](#tables)
+      - [Derived (subquery-generated) Tables](#derived-subquery-generated-tables)
+    - [Temporary Tables](#temporary-tables)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -634,3 +639,35 @@ SELECT DISTINCT actor_id FROM film_actor ORDER BY actor_id;
 <img src='images/1747300777121.png' width='120'/>
 
 **Note:** Generating a distinct set of results requires the data to be sorted, which can be a time-consuming process for large data sets. Don't fall into the trap of using `distinct` just to be sure there are no duplicates. Instead, take time to understand the data you are working with so that you'll know whether duplicates are possible.
+
+### The `from` Clause
+
+The `from` clause defines the tables used by a query, along with the means of linking tables together.
+
+#### Tables
+
+Types of tables:
+- Permanent tables (i.e. created using the `create table` statement)
+- Derived tables (i.e. rows returned by a subquery and held in memory)
+- Temporary tables (i.e. volatile data held in memory)
+- Virtual tables (i.e. created using the `create view` statement)
+
+Each of these tables may be included in the query's `from` clause.
+
+##### Derived (subquery-generated) Tables
+
+A subquery is a query contained within another query. Subqueries are surrounded by parentheses and can be used in various parts of a `select` statement.
+
+When used within the `from` clause, a subquery generates a derived table that is visible from all other query clauses and can interact with other tables named in the `from` clause.
+
+```sql
+mysql> SELECT concat(cust.last_name, ', ', cust.first_name) full_name
+    -> FROM
+    ->   (SELECT first_name, last_name, email       -- Subquery
+    ->    FROM customer
+    ->    WHERE first_name = 'Jessie'
+    ->   ) cust;
+```
+<img src='images/1747302138487.png' width='500'/>
+
+#### Temporary Tables
