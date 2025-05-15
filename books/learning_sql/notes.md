@@ -54,6 +54,10 @@ mysql> select * from <table>;              -- select all rows from a table
       - [Column Value Violations](#column-value-violations)
       - [Invalid Date Conversions](#invalid-date-conversions)
     - [The Sakila Database](#the-sakila-database)
+- [Chapter 3: Query Primer](#chapter-3-query-primer)
+  - [Query Mechanics](#query-mechanics)
+  - [Query Clauses](#query-clauses)
+  - [The `select` Clause](#the-select-clause)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -115,7 +119,7 @@ MySQL provides several numeric data types for different storage needs.
 | `int`       | -2,147,483,648 to 2,147,483,647 | 0 to 4,294,967,295 |
 | `bigint`    | -2^63 to 2^63 - 1               | 0 to 2^64 - 1      |
 
-#####	 Floating-Point Types
+#####  Floating-Point Types
 
 For decimal values, MySQL offers `float` and `double` types with syntax `float(p, s)` or `double(p, s)`:
 - `p` = precision (total digits)
@@ -509,3 +513,68 @@ desc customer;
 ```
 <img src='images/1747298115512.png' width='650'/>
 
+## Chapter 3: Query Primer
+
+### Query Mechanics
+
+After logging into MySQL, each time a query is sent, the server checks the following things:
+1. Do you have permission to execute the statement?
+2. Do you have permission to access the desired resource?
+3. Is your syntax correct?
+
+If your statement passes these checks, then your query is handed to the *query optimizer*. The query optimizer's job is to determine the most efficient way to execute the query based on the current database schema, available indexes, and statistics about the data. The optimizer looks at things the order in which to join the tables and the indexes available, and then pics an *execution plan*, which the server uses to execute your query.
+
+Once the server finishes executing your query, the *result set* is returned to the calling application, which is the `mysql` tool. The result set is just another table.
+
+<img src='images/1747298639326.png' width='350'/>
+
+
+### Query Clauses
+
+Several clauses make up the `select` statement:
+
+| Clause name | Purpose                                                                |
+| ----------- | ---------------------------------------------------------------------- |
+| select      | Determines which columns to include in the query’s result set          |
+| from        | Identifies the tables from which to retrieve data and how to join them |
+| where       | Filters out unwanted data                                              |
+| group by    | Used to group rows together by common column values                    |
+| having      | Filters out unwanted groups                                            |
+| order by    | Sorts the rows of the final result set by one or more columns          |
+
+### The `select` Clause
+
+The `select` clause is the first clause of a `select` statement. It is one of the last clauses that the database server evaluates. The `from` clause is the second clause of a `select` statement. It identifies the tables from which to retrieve data and how to join them.
+
+```sql
+mysql> SELECT * 
+    -> FROM language;
+```
+<img src='images/1747299132326.png' width='350'/>
+
+```sql
+mysql> SELECT language_id, name, last_update
+    -> FROM language;
+```
+<img src='images/1747299217897.png' width='350'/>
+
+```sql
+mysql> SELECT name
+    -> FROM language;
+```
+<img src='images/1747299284126.png' width='200'/>
+
+In addition to column names, you can include:
+- Literals, such as strings or numbers
+- Expressions, such as `transaction.amount * -1`
+- Built-in function calls, such as `ROUND(transaction.amount, 2)`
+- User-defined function calls, such as `my_function(transaction.amount)`
+
+```mysql
+mysql> SELECT language_id,
+    ->   'COMMON' language_usage,
+    ->   language_id * 3.1415927 lang_pi_value,
+    ->   upper(name) language_name
+    -> FROM language;
+```
+<img src='images/1747299599635.png' width='450'/>
