@@ -69,6 +69,7 @@ mysql> nopager;                            -- turn off the pager
       - [Views](#views)
     - [Table Links](#table-links)
     - [Defining Table Aliases](#defining-table-aliases)
+  - [The `where` Clause](#the-where-clause)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -581,7 +582,7 @@ In addition to column names, you can include:
 - Built-in function calls, such as `ROUND(transaction.amount, 2)`
 - User-defined function calls, such as `my_function(transaction.amount)`
 
-```mysql
+```sql
 mysql> SELECT language_id,
     ->   'COMMON' language_usage,
     ->   language_id * 3.1415927 lang_pi_value,
@@ -677,7 +678,7 @@ mysql> SELECT concat(cust.last_name, ', ', cust.first_name) full_name
 
 Tables look like permanent tables, but any data inserted will disappear at some point (generally at the end of a transaction or when your database session is closed). 
 
-```mysql
+```sql
 mysql> CREATE TEMPORARY TABLE actors_j
     -> (actor_id smallint(5),
     -> first_name varchar(45),
@@ -711,7 +712,7 @@ mysql> SELECT * FROM actors_j;
 
 A view is a query that is stored in the data dictonary. It looks and acts like a table, but there is no data associated with a view. Because of this, some people refer to views as virtual tables. When you issue a query against a view, your query is merged with the view definition to create a final query to be executed.
 
-```mysql
+```sql
 mysql> CREATE VIEW cust_vw AS
     -> SELECT customer_id, first_name, last_name, active
     -> FROM customer;
@@ -755,7 +756,7 @@ This mandate is the ANSI-approved method of joining tables and is the most porta
 ```sql
 mysql> SELECT customer.first_name, customer.last_name, time(rental.rental_date) rental_time
     -> FROM customer
-    ->   INNER JOIN rental
+    ->   INNER JOIN rental                                  -- Using a table link to join the tables
     ->   ON customer.customer_id = rental.customer_id
     -> WHERE date(rental.rental_date) = '2005-06-14';
 +------------+-----------+-------------+
@@ -787,33 +788,64 @@ When multiple tables are joined in a query, you need a way to identify which tab
 - Use the entire table name, such as `employee.emp_id`.
 - Assign each table an *alias* and use the alias throughout the query.
 
-```mysql
+```sql
 mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
-    -> FROM customer c
+    -> FROM customer c                                  -- Using a table alias
     ->   INNER JOIN rental r
     ->   ON c.customer_id = r.customer_id
     -> WHERE date(r.rental_date) = '2005-06-14';
-+------------+-----------+-------------+
-| first_name | last_name | rental_time |
-+------------+-----------+-------------+
-| JEFFERY    | PINSON    | 22:53:33    |
-| ELMER      | NOE       | 22:55:13    |
-| MINNIE     | ROMERO    | 23:00:34    |
-| MIRIAM     | MCKINNEY  | 23:07:08    |
-| DANIEL     | CABRAL    | 23:09:38    |
-| TERRANCE   | ROUSH     | 23:12:46    |
-| JOYCE      | EDWARDS   | 23:16:26    |
-| GWENDOLYN  | MAY       | 23:16:27    |
-| CATHERINE  | CAMPBELL  | 23:17:03    |
-| MATTHEW    | MAHAN     | 23:25:58    |
-| HERMAN     | DEVORE    | 23:35:09    |
-| AMBER      | DIXON     | 23:42:56    |
-| TERRENCE   | GUNDERSON | 23:47:35    |
-| SONIA      | GREGORY   | 23:50:11    |
-| CHARLES    | KOWALSKI  | 23:54:34    |
-| JEANETTE   | GREENE    | 23:54:46    |
-+------------+-----------+-------------+
-16 rows in set (0.00 sec)
 ```
 
+Additionally, you can use the `as` keyword to make your intent clearer, although it is optional:
 
+```sql
+mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
+    -> FROM customer AS c                               -- Using a table alias with 'as'
+    ->   INNER JOIN rental AS r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) = '2005-06-14';
+```
+
+### The `where` Clause
+
+The `where` clause is a mechanism for filtering out unwanted rows from your result set.
+
+```
+mysql> SELECT title
+    -> FROM film
+    -> WHERE rating = 'G' AND rental_duration >= 7;
++-------------------------+
+| title                   |
++-------------------------+
+| BLANKET BEVERLY         |
+| BORROWERS BEDAZZLED     |
+| BRIDE INTRIGUE          |
+| CATCH AMISTAD           |
+| CITIZEN SHREK           |
+| COLDBLOODED DARLING     |
+| CONTROL ANTHEM          |
+| CRUELTY UNFORGIVEN      |
+| DARN FORRESTER          |
+| DESPERATE TRAINSPOTTING |
+| DIARY PANIC             |
+| DRACULA CRYSTAL         |
+| EMPIRE MALKOVICH        |
+| FIREHOUSE VIETNAM       |
+| GILBERT PELICAN         |
+| GRADUATE LORD           |
+| GREASE YOUTH            |
+| GUN BONNIE              |
+| HOOK CHARIOTS           |
+| MARRIED GO              |
+| MENAGERIE RUSHMORE      |
+| MUSCLE BRIGHT           |
+| OPERATION OPERATION     |
+| PRIMARY GLASS           |
+| REBEL AIRPORT           |
+| SPIKING ELEMENT         |
+| TRUMAN CRAZY            |
+| WAKE JAWS               |
+| WAR NOTTING             |
++-------------------------+
+29 rows in set (0.00 sec)
+```
