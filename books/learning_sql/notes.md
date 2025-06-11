@@ -66,6 +66,7 @@ mysql> nopager;                            -- turn off the pager
     - [Tables](#tables)
       - [Derived (subquery-generated) Tables](#derived-subquery-generated-tables)
     - [Temporary Tables](#temporary-tables)
+    - [Views](#views)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -702,4 +703,39 @@ mysql> SELECT * FROM actors_j;
 |       43 | KIRK       | JOVOVICH  |
 +----------+------------+-----------+
 7 rows in set (0.00 sec)
+```
+
+#### Views
+
+A view is a query that is stored in the data dictonary. It looks and acts like a table, but there is no data associated with a view. Because of this, some people refer to views as virtual tables. When you issue a query against a view, your query is merged with the view definition to create a final query to be executed.
+
+```mysql
+mysql> CREATE VIEW cust_vw AS
+    -> SELECT customer_id, first_name, last_name, active
+    -> FROM customer;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT first_name, last_name
+    -> FROM cust_vw
+    -> WHERE active = 0;
++------------+-----------+
+| first_name | last_name |
++------------+-----------+
+| SANDRA     | MARTIN    |
+| JUDITH     | COX       |
+| SHEILA     | WELLS     |
+| ERICA      | MATTHEWS  |
+| HEIDI      | LARSON    |
+| PENNY      | NEAL      |
+| KENNETH    | GOODEN    |
+| HARRY      | ARCE      |
+| NATHAN     | RUNYON    |
+| THEODORE   | CULP      |
+| MAURICE    | CRAWLEY   |
+| BEN        | EASTER    |
+| CHRISTIAN  | JUNG      |
+| JIMMIE     | EGGLESTON |
+| TERRANCE   | ROUSH     |
++------------+-----------+
+15 rows in set (0.00 sec)
 ```
