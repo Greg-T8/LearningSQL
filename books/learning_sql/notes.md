@@ -70,6 +70,7 @@ mysql> nopager;                            -- turn off the pager
     - [Table Links](#table-links)
     - [Defining Table Aliases](#defining-table-aliases)
   - [The `where` Clause](#the-where-clause)
+  - [The `group by` and `having` Clauses](#the-group-by-and-having-clauses)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -824,28 +825,58 @@ mysql> SELECT title
 | CITIZEN SHREK           |
 | COLDBLOODED DARLING     |
 | CONTROL ANTHEM          |
-| CRUELTY UNFORGIVEN      |
-| DARN FORRESTER          |
-| DESPERATE TRAINSPOTTING |
-| DIARY PANIC             |
-| DRACULA CRYSTAL         |
-| EMPIRE MALKOVICH        |
-| FIREHOUSE VIETNAM       |
-| GILBERT PELICAN         |
-| GRADUATE LORD           |
-| GREASE YOUTH            |
-| GUN BONNIE              |
-| HOOK CHARIOTS           |
-| MARRIED GO              |
-| MENAGERIE RUSHMORE      |
-| MUSCLE BRIGHT           |
-| OPERATION OPERATION     |
-| PRIMARY GLASS           |
-| REBEL AIRPORT           |
-| SPIKING ELEMENT         |
-| TRUMAN CRAZY            |
+| ...                     |
 | WAKE JAWS               |
 | WAR NOTTING             |
 +-------------------------+
 29 rows in set (0.00 sec)
 ```
+
+Individual conditions are combined using the `and`, `or`, and `not` keywords.
+
+```sql
+mysql> SELECT title
+    -> FROM film
+    -> WHERE rating = 'G' OR rental_duration >= 7;
++---------------------------+
+| title                     |
++---------------------------+
+| ACE GOLDFINGER            |
+| ADAPTATION HOLES          |
+| AFFAIR PREJUDICE          |
+| AFRICAN EGG               |
+| ALAMO VIDEOTAPE           |
+| AMISTAD MIDSUMMER         |
+| ...                       |
+| WESTWARD SEABISCUIT       |
+| WOLVES DESIRE             |
+| WON DARES                 |
+| WORKER TARZAN             |
+| YOUNG LANGUAGE            |
++---------------------------+
+340 rows in set (0.00 sec)
+```
+
+When using both the `and` and `or` keywords, you can use parentheses to group conditions together:
+
+```sql
+mysql> SELECT title, rating, rental_duration
+    -> FROM film
+    -> WHERE (rating = 'G' AND rental_duration >= 7)
+    ->   OR (rating = 'PG-13' AND rental_duration < 4);
++-------------------------+--------+-----------------+
+| title                   | rating | rental_duration |
++-------------------------+--------+-----------------+
+| ALABAMA DEVIL           | PG-13  |               3 |
+| BACKLASH UNDEFEATED     | PG-13  |               3 |
+| BILKO ANONYMOUS         | PG-13  |               3 |
+| ...                                                |
+| WAKE JAWS               | G      |               7 |
+| WAR NOTTING             | G      |               7 |
+| WORLD LEATHERNECKS      | PG-13  |               3 |
++-------------------------+--------+-----------------+
+68 rows in set (0.00 sec)
+```
+
+### The `group by` and `having` Clauses
+
