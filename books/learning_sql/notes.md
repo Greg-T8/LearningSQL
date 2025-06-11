@@ -65,8 +65,10 @@ mysql> nopager;                            -- turn off the pager
   - [The `from` Clause](#the-from-clause)
     - [Tables](#tables)
       - [Derived (subquery-generated) Tables](#derived-subquery-generated-tables)
-    - [Temporary Tables](#temporary-tables)
-    - [Views](#views)
+      - [Temporary Tables](#temporary-tables)
+      - [Views](#views)
+    - [Table Links](#table-links)
+    - [Defining Table Aliases](#defining-table-aliases)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -671,7 +673,7 @@ mysql> SELECT concat(cust.last_name, ', ', cust.first_name) full_name
 ```
 <img src='images/1747302138487.png' width='500'/>
 
-#### Temporary Tables
+##### Temporary Tables
 
 Tables look like permanent tables, but any data inserted will disappear at some point (generally at the end of a transaction or when your database session is closed). 
 
@@ -705,7 +707,7 @@ mysql> SELECT * FROM actors_j;
 7 rows in set (0.00 sec)
 ```
 
-#### Views
+##### Views
 
 A view is a query that is stored in the data dictonary. It looks and acts like a table, but there is no data associated with a view. Because of this, some people refer to views as virtual tables. When you issue a query against a view, your query is merged with the view definition to create a final query to be executed.
 
@@ -739,3 +741,79 @@ mysql> SELECT first_name, last_name
 +------------+-----------+
 15 rows in set (0.00 sec)
 ```
+
+No additional data is stored in the database for a view: the server simply tucks away the select statement for future use.
+
+Views are created for various reasons, including to hide columns from users and to simplify complext database designs.
+
+#### Table Links
+
+After tables, the second derivation from the simple `from` clause is the mandate that if more than one table appears in the `from` clause, the conditions used to *link* the tables must be specified.
+
+This mandate is the ANSI-approved method of joining tables and is the most portable across the various database servers.
+
+```sql
+mysql> SELECT customer.first_name, customer.last_name, time(rental.rental_date) rental_time
+    -> FROM customer
+    ->   INNER JOIN rental
+    ->   ON customer.customer_id = rental.customer_id
+    -> WHERE date(rental.rental_date) = '2005-06-14';
++------------+-----------+-------------+
+| first_name | last_name | rental_time |
++------------+-----------+-------------+
+| JEFFERY    | PINSON    | 22:53:33    |
+| ELMER      | NOE       | 22:55:13    |
+| MINNIE     | ROMERO    | 23:00:34    |
+| MIRIAM     | MCKINNEY  | 23:07:08    |
+| DANIEL     | CABRAL    | 23:09:38    |
+| TERRANCE   | ROUSH     | 23:12:46    |
+| JOYCE      | EDWARDS   | 23:16:26    |
+| GWENDOLYN  | MAY       | 23:16:27    |
+| CATHERINE  | CAMPBELL  | 23:17:03    |
+| MATTHEW    | MAHAN     | 23:25:58    |
+| HERMAN     | DEVORE    | 23:35:09    |
+| AMBER      | DIXON     | 23:42:56    |
+| TERRENCE   | GUNDERSON | 23:47:35    |
+| SONIA      | GREGORY   | 23:50:11    |
+| CHARLES    | KOWALSKI  | 23:54:34    |
+| JEANETTE   | GREENE    | 23:54:46    |
++------------+-----------+-------------+
+16 rows in set (0.02 sec)
+```
+
+#### Defining Table Aliases
+
+When multiple tables are joined in a query, you need a way to identify which table you are referring to when you reference columns in the `select`, `where`, `group by`, `having`, and `order by` clauses. You have two choices:
+- Use the entire table name, such as `employee.emp_id`.
+- Assign each table an *alias* and use the alias throughout the query.
+
+```mysql
+mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) = '2005-06-14';
++------------+-----------+-------------+
+| first_name | last_name | rental_time |
++------------+-----------+-------------+
+| JEFFERY    | PINSON    | 22:53:33    |
+| ELMER      | NOE       | 22:55:13    |
+| MINNIE     | ROMERO    | 23:00:34    |
+| MIRIAM     | MCKINNEY  | 23:07:08    |
+| DANIEL     | CABRAL    | 23:09:38    |
+| TERRANCE   | ROUSH     | 23:12:46    |
+| JOYCE      | EDWARDS   | 23:16:26    |
+| GWENDOLYN  | MAY       | 23:16:27    |
+| CATHERINE  | CAMPBELL  | 23:17:03    |
+| MATTHEW    | MAHAN     | 23:25:58    |
+| HERMAN     | DEVORE    | 23:35:09    |
+| AMBER      | DIXON     | 23:42:56    |
+| TERRENCE   | GUNDERSON | 23:47:35    |
+| SONIA      | GREGORY   | 23:50:11    |
+| CHARLES    | KOWALSKI  | 23:54:34    |
+| JEANETTE   | GREENE    | 23:54:46    |
++------------+-----------+-------------+
+16 rows in set (0.00 sec)
+```
+
+
