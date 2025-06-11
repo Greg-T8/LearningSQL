@@ -671,3 +671,35 @@ mysql> SELECT concat(cust.last_name, ', ', cust.first_name) full_name
 <img src='images/1747302138487.png' width='500'/>
 
 #### Temporary Tables
+
+Tables look like permanent tables, but any data inserted will disappear at some point (generally at the end of a transaction or when your database session is closed). 
+
+```mysql
+mysql> CREATE TEMPORARY TABLE actors_j
+    -> (actor_id smallint(5),
+    -> first_name varchar(45),
+    -> last_name varchar(45)
+    -> );
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> INSERT INTO actors_j
+    -> SELECT actor_id, first_name, last_name
+    -> FROM actor
+    -> WHERE last_name LIKE 'J%';
+Query OK, 7 rows affected (0.00 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM actors_j;
++----------+------------+-----------+
+| actor_id | first_name | last_name |
++----------+------------+-----------+
+|      119 | WARREN     | JACKMAN   |
+|      131 | JANE       | JACKMAN   |
+|        8 | MATTHEW    | JOHANSSON |
+|       64 | RAY        | JOHANSSON |
+|      146 | ALBERT     | JOHANSSON |
+|       82 | WOODY      | JOLIE     |
+|       43 | KIRK       | JOVOVICH  |
++----------+------------+-----------+
+7 rows in set (0.00 sec)
+```
