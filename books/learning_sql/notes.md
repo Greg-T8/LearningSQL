@@ -71,6 +71,7 @@ mysql> nopager;                            -- turn off the pager
     - [Defining Table Aliases](#defining-table-aliases)
   - [The `where` Clause](#the-where-clause)
   - [The `group by` and `having` Clauses](#the-group-by-and-having-clauses)
+  - [The `order by` Clause](#the-order-by-clause)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -880,3 +881,124 @@ mysql> SELECT title, rating, rental_duration
 
 ### The `group by` and `having` Clauses
 
+Use the `group by` clause to group the data by colummn values.
+
+```sql
+mysql> SELECT c.first_name, c.last_name, count(*)
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> GROUP BY c.first_name, c.last_name
+    -> HAVING count(*) >= 40;
++------------+-----------+----------+
+| first_name | last_name | count(*) |
++------------+-----------+----------+
+| TAMMY      | SANDERS   |       41 |
+| CLARA      | SHAW      |       42 |
+| ELEANOR    | HUNT      |       46 |
+| SUE        | PETERS    |       40 |
+| MARCIA     | DEAN      |       42 |
+| WESLEY     | BULL      |       40 |
+| KARL       | SEAL      |       45 |
++------------+-----------+----------+
+7 rows in set (0.02 sec)
+```
+
+When using the `group by` clause, you can use the `having` clause to filter out unwanted groups. The `having` clause is similar to the `where` clause, but it operates on groups of rows rather than individual rows.
+
+### The `order by` Clause
+
+The `order by` clause is the mechanism for sorting your result set using either raw column data or expressions based on column data.
+
+```sql
+mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) = '2005-06-14';
++------------+-----------+-------------+
+| first_name | last_name | rental_time |
++------------+-----------+-------------+
+| JEFFERY    | PINSON    | 22:53:33    |
+| ELMER      | NOE       | 22:55:13    |
+| MINNIE     | ROMERO    | 23:00:34    |
+| MIRIAM     | MCKINNEY  | 23:07:08    |
+| DANIEL     | CABRAL    | 23:09:38    |
+| TERRANCE   | ROUSH     | 23:12:46    |
+| JOYCE      | EDWARDS   | 23:16:26    |
+| GWENDOLYN  | MAY       | 23:16:27    |
+| CATHERINE  | CAMPBELL  | 23:17:03    |
+| MATTHEW    | MAHAN     | 23:25:58    |
+| HERMAN     | DEVORE    | 23:35:09    |
+| AMBER      | DIXON     | 23:42:56    |
+| TERRENCE   | GUNDERSON | 23:47:35    |
+| SONIA      | GREGORY   | 23:50:11    |
+| CHARLES    | KOWALSKI  | 23:54:34    |
+| JEANETTE   | GREENE    | 23:54:46    |
++------------+-----------+-------------+
+16 rows in set (0.01 sec)
+```
+
+To sort the result set by a single column, use the `order by` clause:
+
+```sql
+mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) = '2005-06-14'
+    -> ORDER BY c.last_name;
++------------+-----------+-------------+
+| first_name | last_name | rental_time |
++------------+-----------+-------------+
+| DANIEL     | CABRAL    | 23:09:38    |
+| CATHERINE  | CAMPBELL  | 23:17:03    |
+| HERMAN     | DEVORE    | 23:35:09    |
+| AMBER      | DIXON     | 23:42:56    |
+| JOYCE      | EDWARDS   | 23:16:26    |
+| JEANETTE   | GREENE    | 23:54:46    |
+| SONIA      | GREGORY   | 23:50:11    |
+| TERRENCE   | GUNDERSON | 23:47:35    |
+| CHARLES    | KOWALSKI  | 23:54:34    |
+| MATTHEW    | MAHAN     | 23:25:58    |
+| GWENDOLYN  | MAY       | 23:16:27    |
+| MIRIAM     | MCKINNEY  | 23:07:08    |
+| ELMER      | NOE       | 22:55:13    |
+| JEFFERY    | PINSON    | 22:53:33    |
+| MINNIE     | ROMERO    | 23:00:34    |
+| TERRANCE   | ROUSH     | 23:12:46    |
++------------+-----------+-------------+
+16 rows in set (0.00 sec)
+```
+
+To sort the result set by multiple columns, list the columns in the `order by` clause, separated by commas:
+
+```sql
+mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) = '2005-06-14'
+    -> ORDER BY c.last_name, c.first_name;
++------------+-----------+-------------+
+| first_name | last_name | rental_time |
++------------+-----------+-------------+
+| DANIEL     | CABRAL    | 23:09:38    |
+| CATHERINE  | CAMPBELL  | 23:17:03    |
+| HERMAN     | DEVORE    | 23:35:09    |
+| AMBER      | DIXON     | 23:42:56    |
+| JOYCE      | EDWARDS   | 23:16:26    |
+| JEANETTE   | GREENE    | 23:54:46    |
+| SONIA      | GREGORY   | 23:50:11    |
+| TERRENCE   | GUNDERSON | 23:47:35    |
+| CHARLES    | KOWALSKI  | 23:54:34    |
+| MATTHEW    | MAHAN     | 23:25:58    |
+| GWENDOLYN  | MAY       | 23:16:27    |
+| MIRIAM     | MCKINNEY  | 23:07:08    |
+| ELMER      | NOE       | 22:55:13    |
+| JEFFERY    | PINSON    | 22:53:33    |
+| MINNIE     | ROMERO    | 23:00:34    |
+| TERRANCE   | ROUSH     | 23:12:46    |
++------------+-----------+-------------+
+16 rows in set (0.01 sec)
+```
