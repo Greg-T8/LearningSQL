@@ -72,6 +72,8 @@ mysql> nopager;                            -- turn off the pager
   - [The `where` Clause](#the-where-clause)
   - [The `group by` and `having` Clauses](#the-group-by-and-having-clauses)
   - [The `order by` Clause](#the-order-by-clause)
+    - [Ascending Versus Descending Sort Order](#ascending-versus-descending-sort-order)
+    - [Sorting via Numeric Placeholders](#sorting-via-numeric-placeholders)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -1002,3 +1004,72 @@ mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
 +------------+-----------+-------------+
 16 rows in set (0.01 sec)
 ```
+
+#### Ascending Versus Descending Sort Order
+
+By default, the `order by` clause sorts the result set in ascending order. To sort in descending order, use the `desc` keyword:
+
+```sql
+mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) = '2005-06-14'
+    -> ORDER BY time(r.rental_date) desc;
++------------+-----------+-------------+
+| first_name | last_name | rental_time |
++------------+-----------+-------------+
+| JEANETTE   | GREENE    | 23:54:46    |
+| CHARLES    | KOWALSKI  | 23:54:34    |
+| SONIA      | GREGORY   | 23:50:11    |
+| TERRENCE   | GUNDERSON | 23:47:35    |
+| AMBER      | DIXON     | 23:42:56    |
+| HERMAN     | DEVORE    | 23:35:09    |
+| MATTHEW    | MAHAN     | 23:25:58    |
+| CATHERINE  | CAMPBELL  | 23:17:03    |
+| GWENDOLYN  | MAY       | 23:16:27    |
+| JOYCE      | EDWARDS   | 23:16:26    |
+| TERRANCE   | ROUSH     | 23:12:46    |
+| DANIEL     | CABRAL    | 23:09:38    |
+| MIRIAM     | MCKINNEY  | 23:07:08    |
+| MINNIE     | ROMERO    | 23:00:34    |
+| ELMER      | NOE       | 22:55:13    |
+| JEFFERY    | PINSON    | 22:53:33    |
++------------+-----------+-------------+
+16 rows in set (0.01 sec)
+```
+
+#### Sorting via Numeric Placeholders
+
+If you are sorting using the columns in your `select` clause, you can use numeric placeholders to refer to the columns by their position in the `select` clause. The first column is 1, the second column is 2, and so on.
+
+```sql
+mysql> SELECT c.first_name, c.last_name, time(r.rental_date) rental_time
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) = '2005-06-14'
+    -> ORDER BY 3 desc;
++------------+-----------+-------------+
+| first_name | last_name | rental_time |
++------------+-----------+-------------+
+| JEANETTE   | GREENE    | 23:54:46    |
+| CHARLES    | KOWALSKI  | 23:54:34    |
+| SONIA      | GREGORY   | 23:50:11    |
+| TERRENCE   | GUNDERSON | 23:47:35    |
+| AMBER      | DIXON     | 23:42:56    |
+| HERMAN     | DEVORE    | 23:35:09    |
+| MATTHEW    | MAHAN     | 23:25:58    |
+| CATHERINE  | CAMPBELL  | 23:17:03    |
+| GWENDOLYN  | MAY       | 23:16:27    |
+| JOYCE      | EDWARDS   | 23:16:26    |
+| TERRANCE   | ROUSH     | 23:12:46    |
+| DANIEL     | CABRAL    | 23:09:38    |
+| MIRIAM     | MCKINNEY  | 23:07:08    |
+| MINNIE     | ROMERO    | 23:00:34    |
+| ELMER      | NOE       | 22:55:13    |
+| JEFFERY    | PINSON    | 22:53:33    |
++------------+-----------+-------------+
+16 rows in set (0.00 sec)
+```
+This feature is useful when you are sorting on an expression, such as in the example above.
