@@ -85,6 +85,10 @@ mysql> nopager;                            -- turn off the pager
     - [Range Conditions](#range-conditions)
       - [The `between` Operator](#the-between-operator)
       - [String ranges](#string-ranges)
+    - [Membership Conditions (`in` Operator)](#membership-conditions-in-operator)
+      - [Using subqueries](#using-subqueries)
+      - [Using `not in`](#using-not-in)
+    - [Matching Conditions](#matching-conditions)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -1472,3 +1476,61 @@ mysql> SELECT last_name, first_name
 ```
 
 To work with string ranges, you need to know the order of the characters within your character set. This order is called *collation*.
+
+#### Membership Conditions (`in` Operator)
+
+In some cases, you want to check whether an expression is a member of a set of values. 
+
+```sql
+mysql> SELECT title, rating
+    -> FROM film
+    -> WHERE rating IN ('G', 'PG');
+```
+
+##### Using subqueries
+
+You can use a subquery to generate a set for you on the fly:
+
+```sql
+mysql> SELECT title, rating
+    -> FROM film
+    -> WHERE rating IN (SELECT rating FROM film WHERE title LIKE '%PET%');
+
++---------------------------+--------+
+| title                     | rating |
++---------------------------+--------+
+| ACADEMY DINOSAUR          | PG     |
+| ACE GOLDFINGER            | G      |
+| AFFAIR PREJUDICE          | G      |
+...
+| WORDS HUNTER              | PG     |
+| WORST BANGER              | PG     |
+| YOUNG LANGUAGE            | G      |
++---------------------------+--------+
+372 rows in set (0.00 sec)
+```
+
+##### Using `not in`
+
+You can also use the `not in` operator to check whether an expression is not a member of a set of values:
+
+```sql
+mysql> SELECT title, rating
+    -> FROM film
+    -> WHERE rating NOT IN ('PG-13', 'R', 'NC-17');
+
++---------------------------+--------+
+| title                     | rating |
++---------------------------+--------+
+| ACADEMY DINOSAUR          | PG     |
+| ACE GOLDFINGER            | G      |
+| AFFAIR PREJUDICE          | G      |
+...
+| WORDS HUNTER              | PG     |
+| WORST BANGER              | PG     |
+| YOUNG LANGUAGE            | G      |
++---------------------------+--------+
+372 rows in set (0.00 sec)
+```
+
+#### Matching Conditions
