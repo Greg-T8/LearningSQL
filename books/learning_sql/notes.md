@@ -75,6 +75,9 @@ mysql> nopager;                            -- turn off the pager
     - [Ascending Versus Descending Sort Order](#ascending-versus-descending-sort-order)
     - [Sorting via Numeric Placeholders](#sorting-via-numeric-placeholders)
   - [Test Your Knowledge](#test-your-knowledge)
+- [Chapter 4: Filtering](#chapter-4-filtering)
+  - [Condition Evaluation](#condition-evaluation)
+  - [Building a Condition](#building-a-condition)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -1260,3 +1263,37 @@ mysql> SELECT c.email, r.return_date
 +---------------------------------------+---------------------+
 16 rows in set (0.01 sec)
 ```
+
+## Chapter 4: Filtering
+
+All SQL data statements (except the `insert` command) include an optional `where` clause containing one or more *filter conditions* used to restrict the number of rows acted on by the SQL statement.
+
+The `select` statement also includes a `having` clause in which filter conditions pertaining to grouped data may be included.
+
+### Condition Evaluation
+
+A `where` clause may have one or more `conditions` separated by operators `and` or `or`.
+
+```sql
+WHERE first_name = 'STEVEN' and create_date > '2006-01-01'
+WHERE first_name = 'STEVEN' or create_date > '2006-01-01'
+```
+
+Using parentheses:
+
+```sql
+WHERE (first_name = 'STEVEN' or last_name = 'YOUNG') AND create_date > '2006-01-01'
+```
+
+Using the `not` operator:
+
+```sql
+WHERE NOT (first_name = 'STEVEN' or last_name = 'YOUNG') AND create_date > '2006-01-01'
+```
+It is difficult for a person to evaluate a `where` clause that includes the `not` operator, so you won't encounter it often. Instead, you will see the following style:
+
+```sql
+WHERE first_name <> 'STEVEN' AND last_name <> 'YOUNG' AND create_date > '2006-01-01'
+```
+
+### Building a Condition
