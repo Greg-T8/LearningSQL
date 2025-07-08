@@ -78,6 +78,13 @@ mysql> nopager;                            -- turn off the pager
 - [Chapter 4: Filtering](#chapter-4-filtering)
   - [Condition Evaluation](#condition-evaluation)
   - [Building a Condition](#building-a-condition)
+  - [Condition Types](#condition-types)
+    - [Equality Conditions](#equality-conditions)
+      - [Inequality conditions](#inequality-conditions)
+      - [Data modification using equality conditions](#data-modification-using-equality-conditions)
+    - [Range Conditions](#range-conditions)
+      - [The `between` Operator](#the-between-operator)
+      - [String ranges](#string-ranges)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -1297,3 +1304,171 @@ WHERE first_name <> 'STEVEN' AND last_name <> 'YOUNG' AND create_date > '2006-01
 ```
 
 ### Building a Condition
+
+A condition is made up of one or more *expressions* combined with one or more *operators*. 
+
+An expression can be any of the following:
+- A number
+- A column in a table or view
+- A string literal, such as 'Maple Street'
+- A built-in function, such as concat('Learning', ' ', 'SQL')
+- A subquery
+- A list of expressions, such as ('Boston', 'New York', 'Chicago')
+
+The operators used within conditions include:
+- Comparison operators, such as `=`, `!=`, `<>`, `like`, `in`, and `between`
+- Arithmetic operators, such as `+`, `-`, `*`, and `/`
+
+### Condition Types
+
+#### Equality Conditions
+
+A large percentage of the filter conditions you write will be in the form `column = expression`:
+
+```sql
+title = 'RIVER OUTLAW'
+fed_id = '111-11-1111'
+amount = 375.25
+film_id = (SELECT film_id FROM film WHERE title = 'RIVER OUTLAW')
+```
+
+The following query uses two equality conditions, one in the `on` clause (a join condition) and one in the `where` clause (a filter condition):
+
+```sql
+mysql> SELECT c.email
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) = '2005-06-14';
+
++---------------------------------------+
+| email                                 |
++---------------------------------------+
+| CATHERINE.CAMPBELL@sakilacustomer.org |
+| JOYCE.EDWARDS@sakilacustomer.org      |
+| AMBER.DIXON@sakilacustomer.org        |
+| JEANETTE.GREENE@sakilacustomer.org    |
+| MINNIE.ROMERO@sakilacustomer.org      |
+| GWENDOLYN.MAY@sakilacustomer.org      |
+| SONIA.GREGORY@sakilacustomer.org      |
+| MIRIAM.MCKINNEY@sakilacustomer.org    |
+| CHARLES.KOWALSKI@sakilacustomer.org   |
+| DANIEL.CABRAL@sakilacustomer.org      |
+| MATTHEW.MAHAN@sakilacustomer.org      |
+| JEFFERY.PINSON@sakilacustomer.org     |
+| HERMAN.DEVORE@sakilacustomer.org      |
+| ELMER.NOE@sakilacustomer.org          |
+| TERRANCE.ROUSH@sakilacustomer.org     |
+| TERRENCE.GUNDERSON@sakilacustomer.org |
++---------------------------------------+
+16 rows in set (0.02 sec)
+```
+
+##### Inequality conditions
+
+The *inequality condition* asserts that two expressions are not equal:
+
+```sql
+mysql> SELECT c.email
+    -> FROM customer c
+    ->   INNER JOIN rental r
+    ->   ON c.customer_id = r.customer_id
+    -> WHERE date(r.rental_date) <> '2005-06-14';
+```
+
+When building inequality conditions, you can use the `!=` operator or the `<>` operator. Both operators are equivalent, but the `!=` operator is not ANSI SQL compliant.
+
+##### Data modification using equality conditions
+
+Equality/inequality conditions are commonly used when modifying data. 
+
+```sql
+mysql> DELETE FROM rental
+    -> WHERE year(rental_date) <> 2005 AND year(rental_date) <> 2006;
+```
+
+#### Range Conditions
+
+You can build conditions that check whether an expression is within a certain range.
+
+```sql
+mysql> SELECT customer_id, rental_date
+    -> FROM rental
+    -> WHERE rental_date <= '2005-05-16'
+    ->   AND rental_date >= '2005-06-14';
+```
+
+##### The `between` Operator
+
+When you have both a lower and upper bound for a range, you can use the `between` operator to simplify your query:
+
+```sql
+mysql> SELECT customer_id, rental_date
+    -> FROM rental
+    -> WHERE rental_date BETWEEN '2005-06-14' AND '2005-06-16';
+```
+When using the `between` operator, always specify the lower bound first, followed by the upper bound. 
+
+The `between` operator is inclusive, meaning that the values specified in the range are included in the result set.
+
+```sql
+mysql> SELECT customer_id, payment_date, amount
+    -> FROM payment
+    -> WHERE amount BETWEEN 10.0 AND 11.99;
++-------------+---------------------+--------+
+| customer_id | payment_date        | amount |
++-------------+---------------------+--------+
+|           2 | 2005-07-30 13:47:43 |  10.99 |
+|           3 | 2005-07-27 20:23:12 |  10.99 |
+|          12 | 2005-08-01 06:50:26 |  10.99 |
+---
+|         591 | 2005-07-07 20:45:51 |  11.99 |
+|         592 | 2005-07-06 22:58:31 |  11.99 |
+|         595 | 2005-07-31 11:51:46 |  10.99 |
++-------------+---------------------+--------+
+114 rows in set (0.01 sec)
+```
+
+##### String ranges
+
+You can also build conditions that search for ranges in strings:
+
+```sql
+mysql> SELECT last_name, first_name
+    -> FROM customer
+    -> WHERE last_name BETWEEN 'FA' and 'FR';
++------------+------------+
+| last_name  | first_name |
++------------+------------+
+| FARNSWORTH | JOHN       |
+| FENNELL    | ALEXANDER  |
+| FERGUSON   | BERTHA     |
+---
+| FOUST      | JACK       |
+| FOWLER     | JO         |
+| FOX        | HOLLY      |
++------------+------------+
+18 rows in set (0.00 sec)
+```
+
+There are five customers whose last names starts with 'FR'. They are not included in the result set since a name like 'FRANKLIN' is not between 'FA' and 'FR'. However, you can pick up four of the five customers by extending the right-hand range to 'FRB':
+
+```sql
+mysql> SELECT last_name, first_name
+    -> FROM customer
+    -> WHERE last_name BETWEEN 'FA' AND 'FRB';
++------------+------------+
+| last_name  | first_name |
++------------+------------+
+| FARNSWORTH | JOHN       |
+| FENNELL    | ALEXANDER  |
+| FERGUSON   | BERTHA     |
+...
+| FRANCISCO  | JOEL       |
+| FRANKLIN   | BETH       |
+| FRAZIER    | GLENDA     |
++------------+------------+
+22 rows in set (0.00 sec)
+```
+
+To work with string ranges, you need to know the order of the characters within your character set. This order is called *collation*.
