@@ -89,6 +89,7 @@ mysql> nopager;                            -- turn off the pager
       - [Using subqueries](#using-subqueries)
       - [Using `not in`](#using-not-in)
     - [Matching Conditions](#matching-conditions)
+      - [Using wildcards](#using-wildcards)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -1534,3 +1535,76 @@ mysql> SELECT title, rating
 ```
 
 #### Matching Conditions
+
+You can use the built-in `left()` and `right()` functions to match the leftmost or rightmost characters in a string:
+
+```sql
+mysql> SELECT last_name, first_name
+    -> FROM customer
+    -> WHERE left(last_name, 1) = 'Q';
+
++-------------+------------+
+| last_name   | first_name |
++-------------+------------+
+| QUALLS      | STEPHEN    |
+| QUINTANILLA | ROGER      |
+| QUIGLEY     | TROY       |
++-------------+------------+
+3 rows in set (0.00 sec)
+```
+
+##### Using wildcards
+
+The following wildcard characters can be used in string matching:
+
+- `_` (underscore) matches a single character
+- `%` (percent) matches zero or more characters
+
+**Note:** ANSI chose `%` for pattern matching because `*` was already used elsewhere in the language, e.g. in arithmetic, i.e. `price * qty`, aggregates, i.e. `COUNT(*)`, and column list, i.e. `select * from table`.
+
+When building conditions that use wildcards, you can use the `like` operator:
+
+```sql
+mysql> SELECT last_name, first_name
+    -> FROM customer
+    -> WHERE last_name LIKE '_A_T%S';
+
++-----------+------------+
+| last_name | first_name |
++-----------+------------+
+| MATTHEWS  | ERICA      |
+| WALTERS   | CASSANDRA  |
+| WATTS     | SHELLY     |
++-----------+------------+
+3 rows in set (0.00 sec)
+```
+
+Sample search expressions:
+
+| Search expression             | Interpretation                                                       |
+| ----------------------------- | -------------------------------------------------------------------- |
+| F%                            | Strings beginning with F                                             |
+| %t                            | Strings ending with t                                                |
+| %bas%                         | Strings containing the substring 'bas'                               |
+| \_ \_t\_                      | Four-character strings with a t in the third position                |
+| \_ \_ \_-\_ \_-\_ \_ \_ \_ \_ | 11-character strings with dashes in the fourth and seventh positions |
+
+Using multiple search expressions:
+
+```sql
+mysql> SELECT last_name, first_name
+    -> FROM customer
+    -> WHERE last_name LIKE 'Q%' OR last_name LIKE 'Y%';
+
++-------------+------------+
+| last_name   | first_name |
++-------------+------------+
+| QUALLS      | STEPHEN    |
+| QUIGLEY     | TROY       |
+| QUINTANILLA | ROGER      |
+| YANEZ       | LUIS       |
+| YEE         | MARVIN     |
+| YOUNG       | CYNTHIA    |
++-------------+------------+
+6 rows in set (0.00 sec)
+```
