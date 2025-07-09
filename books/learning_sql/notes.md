@@ -92,6 +92,7 @@ mysql> nopager;                            -- turn off the pager
       - [Using wildcards](#using-wildcards)
       - [Using regular expressions](#using-regular-expressions)
   - [Null: That Four-Letter Word](#null-that-four-letter-word)
+  - [Test Your Knowledge](#test-your-knowledge-1)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -1678,3 +1679,69 @@ mysql> SELECT rental_id, customer_id
 Empty set (0.00 sec)
 ```
 This is a common mistake, and the database server will not alert you to the error, so be careful when constructing queries that check for `null` values.
+
+You can use the `is not null` operator to check for non-`null` values:
+
+```sql
+mysql> SELECT rental_id, customer_id, return_date
+    -> FROM rental
+    -> WHERE return_date IS NOT NULL;
+
++-----------+-------------+---------------------+
+| rental_id | customer_id | return_date         |
++-----------+-------------+---------------------+
+|         1 |         130 | 2005-05-26 22:04:30 |
+|         2 |         459 | 2005-05-28 19:40:33 |
+|         3 |         408 | 2005-06-01 22:12:39 |
+...
+|     16047 |         114 | 2005-08-25 02:48:48 |
+|     16048 |         103 | 2005-08-31 21:33:07 |
+|     16049 |         393 | 2005-08-30 01:01:12 |
++-----------+-------------+---------------------+
+15861 rows in set (0.01 sec)
+```
+
+**Pitfall** When you need to find results that contain both non-`null` and `null` values, you may be tempted to do something like this:
+
+```sql
+mysql> SELECT rental_id, customer_id, return_date
+    -> FROM rental
+    -> WHERE return_date NOT BETWEEN '2005-05-01' AND '2005-09-01';
+
++-----------+-------------+---------------------+
+| rental_id | customer_id | return_date         |
++-----------+-------------+---------------------+
+|     15365 |         327 | 2005-09-01 03:14:17 |
+|     15388 |          50 | 2005-09-01 03:50:23 |
+...
+|     16037 |          45 | 2005-09-01 02:48:04 |
+|     16040 |         195 | 2005-09-02 02:19:33 |
++-----------+-------------+---------------------+
+62 rows in set (0.00 sec)
+```
+
+However, this query does not yield any results with `null` values, i.e. those who haven't returned their rentals. To fix this, you must account for `null` values explicitly.
+
+The following query returns all rentals that have not been returned, as well as those that were returned outside the specified date range:
+
+```sql
+mysql> SELECT rental_id, customer_id, return_date
+    -> FROM rental
+    -> WHERE return_date IS NULL
+    ->   OR return_date NOT BETWEEN '2005-05-01' AND '2005-09-01';
+
++-----------+-------------+---------------------+
+| rental_id | customer_id | return_date         |
++-----------+-------------+---------------------+
+|     11496 |         155 | NULL                |
+|     11541 |         335 | NULL                |
+|     11563 |          83 | NULL                |
+...
+|     16033 |         226 | 2005-09-01 02:36:15 |
+|     16037 |          45 | 2005-09-01 02:48:04 |
+|     16040 |         195 | 2005-09-02 02:19:33 |
++-----------+-------------+---------------------+
+245 rows in set (0.01 sec)
+```
+
+### Test Your Knowledge
