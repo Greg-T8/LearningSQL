@@ -90,6 +90,8 @@ mysql> nopager;                            -- turn off the pager
       - [Using `not in`](#using-not-in)
     - [Matching Conditions](#matching-conditions)
       - [Using wildcards](#using-wildcards)
+      - [Using regular expressions](#using-regular-expressions)
+  - [Null: That Four-Letter Word](#null-that-four-letter-word)
 
 
 ## Chapter 2: Creating and Populating a Database
@@ -1608,3 +1610,71 @@ mysql> SELECT last_name, first_name
 +-------------+------------+
 6 rows in set (0.00 sec)
 ```
+
+##### Using regular expressions
+
+```sql
+mysql> SELECT last_name, first_name
+    -> FROM customer
+    -> WHERE last_name REGEXP '^[QY]';
+
++-------------+------------+
+| last_name   | first_name |
++-------------+------------+
+| YOUNG       | CYNTHIA    |
+| QUALLS      | STEPHEN    |
+| QUINTANILLA | ROGER      |
+| YANEZ       | LUIS       |
+| YEE         | MARVIN     |
+| QUIGLEY     | TROY       |
++-------------+------------+
+6 rows in set (0.01 sec)
+```
+
+### Null: That Four-Letter Word
+
+`null` is the absence of a value.
+
+Example: before an employee is terminated, the `termination_date` column is set to `null`. After the employee is terminated, the `termination_date` column is set to a date value.
+
+However, `null` is slippery, as there are several flavors of `null`:
+
+- *Not applicable* - Such as the employee ID columnn for a transaction that took place at an ATM machine.
+- *Value not yet known* - Such as when the federal ID is not known at the time a customer row is created.
+- *Value undefined* - Such as when an account is created for a product that has not yet been added to the database.
+
+Some theorists argue there should be a different expression to cover each of these (and more) cases, but most practitioners agree that having multiple `null` values is more confusing than helpful.
+
+When working with `null`, you should remember:
+- An expression can *be* `null`, but it can never *equal* `null`.
+- Two `null`s are never equal to each other.
+
+Use the `is null` operator to check for `null` values:
+
+```sql
+mysql> SELECT rental_id, customer_id
+    -> FROM rental
+    -> WHERE return_date IS NULL;
+
++-----------+-------------+
+| rental_id | customer_id |
++-----------+-------------+
+|     11496 |         155 |
+|     11541 |         335 |
+...
+|     15894 |         168 |
+|     15966 |         374 |
++-----------+-------------+
+183 rows in set (0.01 sec)
+```
+
+Here is the same query using `= null` instead of `is null`:
+
+```sql
+mysql> SELECT rental_id, customer_id
+    -> FROM rental
+    -> WHERE return_date = NULL;
+
+Empty set (0.00 sec)
+```
+This is a common mistake, and the database server will not alert you to the error, so be careful when constructing queries that check for `null` values.
