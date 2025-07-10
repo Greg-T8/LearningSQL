@@ -1745,3 +1745,65 @@ mysql> SELECT rental_id, customer_id, return_date
 ```
 
 ### Test Your Knowledge
+
+Refer to the following subset of rows from the `payment` table for the first two exercises:
+
+<img src="images/1752136459183.png" width="400">
+
+**Exercise 4-1:** Which of the payment IDs would be returned by the following filter conditions? 
+
+`customer_id <> 5 AND (amount > 8 OR date(payment_date) = '2005-08-23')`
+
+My Answer:  
+<img src="images/1752136576336.png" width="400">
+
+**Exercise 4-2:** Which of the payment IDs would be returned by the following filter conditions? 
+
+`customer_id = 5 AND NOT (amount > 6 OR date(payment_date) = '2005-06-19')`
+
+My Answer:
+
+<img src="images/1752136738928.png" width="400">
+
+**Exercise 4-3:** Construct a query that retrieves all rows from the payments table where the amount is either 1.98, 7.98, or 9.98.
+
+```sql
+mysql> SELECT *
+    -> FROM payment
+    -> WHERE amount IN (1.98, 7.98, 9.98);
+
++------------+-------------+----------+-----------+--------+---------------------+---------------------+
+| payment_id | customer_id | staff_id | rental_id | amount | payment_date        | last_update         |
++------------+-------------+----------+-----------+--------+---------------------+---------------------+
+|       1482 |          53 |        2 |     11657 |   7.98 | 2006-02-14 15:16:03 | 2006-02-15 22:12:42 |
+|       1670 |          60 |        2 |     12489 |   9.98 | 2006-02-14 15:16:03 | 2006-02-15 22:12:45 |
+|       2901 |         107 |        1 |     13079 |   1.98 | 2006-02-14 15:16:03 | 2006-02-15 22:13:03 |
+|       4234 |         155 |        2 |     11496 |   7.98 | 2006-02-14 15:16:03 | 2006-02-15 22:13:33 |
+|       4449 |         163 |        2 |     11754 |   7.98 | 2006-02-14 15:16:03 | 2006-02-15 22:13:38 |
+|       7243 |         267 |        2 |     12066 |   7.98 | 2006-02-14 15:16:03 | 2006-02-15 22:15:06 |
+|       9585 |         354 |        1 |     12759 |   7.98 | 2006-02-14 15:16:03 | 2006-02-15 22:16:47 |
++------------+-------------+----------+-----------+--------+---------------------+---------------------+
+7 rows in set (0.01 sec)
+```
+
+**Exercise 4-4** Construct a query that finds all customers whose last name contains an A in the second position and a W anywhere after the A.
+
+```sql
+mysql> SELECT last_name
+    -> FROM customer
+    -> WHERE last_name LIKE "_A%W%";
++------------+
+| last_name  |
++------------+
+| CALDWELL   |
+| FARNSWORTH |
+| HAWKINS    |
+| HAWKS      |
+| LAWRENCE   |
+| LAWSON     |
+| LAWTON     |
+| MARLOW     |
+| MATTHEWS   |
++------------+
+9 rows in set (0.00 sec)
+```
